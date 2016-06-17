@@ -2,6 +2,8 @@ version: '2'
 services:
   elasticsearch:
     image: elasticsearch
+    command: elasticsearch -Des.network.host=0.0.0.0
+    restart: always
     ports:
      - "9200:9200"
      - "9300:9300"
@@ -10,9 +12,23 @@ services:
      - ./elastic_vol/config:/usr/share/elasticsearch/config
   kibana:
     image: kibana
+    restart: always
+    ports:
+     - "5601:5601"
+    links:
+     - elasticsearch
     depends_on:
      - elasticsearch
   logstash:
     image: logstash
+    command: logstash -f /conf/logstash.conf
+    restart: always # After launching up, this may result into failure again and again until elasticsearch is available.
+    ports:
+     - "5000:5000/udp"
+    volumes:
+     - ./logstash_vol:/conf
+    links:
+     - elasticsearch
     depends_on:
      - elasticsearch
+
