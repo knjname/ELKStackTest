@@ -1,0 +1,18 @@
+version: '2'
+services:
+  elasticsearch:
+    image: elasticsearch
+    ports:
+     - "9200:9200"
+     - "9300:9300"
+    volumes:
+     - ./elastic_vol/esdata:/usr/share/elasticsearch/data
+     - ./elastic_vol/config:/usr/share/elasticsearch/config
+  kibana:
+    image: kibana
+    depends_on:
+     - elasticsearch
+  logstash:
+    image: logstash
+    depends_on:
+     - elasticsearch
